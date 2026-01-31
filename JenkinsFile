@@ -1,5 +1,8 @@
 pipeline{
     agent any
+    tools {
+        maven 'Maven'   // ← MUST match the name in Jenkins UI
+    }
     stages{
         stage('Build & Test'){
             steps{
