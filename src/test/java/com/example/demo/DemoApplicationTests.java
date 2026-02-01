@@ -11,6 +11,7 @@ class DemoApplicationTests {
 	@Test
 	void contextLoads() {
 		// assertEquals(1, 2);
+		System.out.println("Demo Secret in Test: " + System.getProperty("demo.secret"));
 	}
 
 }
