@@ -15,6 +15,7 @@ public class DemoApplication {
 	public String demoBean() {
 		// assertEquals("Demo Bean", "Demo Bean");
 		// assertEquals("Demo Bean", "Demo Bean");
+		System.out.println("Demo Secret: " + System.getProperty("demo.secret"));
 		return "Demo Bean";
 	}
 

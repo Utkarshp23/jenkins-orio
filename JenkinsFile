@@ -3,6 +3,11 @@ pipeline{
     tools {
         maven 'Maven'   // ← MUST match the name in Jenkins UI
     }
+
+    environment{
+        MY_SECRET = credentials('demo-secret')
+    }
+
     stages{
         stage('Build & Test'){
             steps{
