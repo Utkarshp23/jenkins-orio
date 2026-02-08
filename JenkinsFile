@@ -1,18 +1,56 @@
-pipeline{
+// pipeline{
+//     agent any
+//     tools {
+//         maven 'Maven'   // ← MUST match the name in Jenkins UI
+//     }
+
+//     environment{
+//         MY_SECRET = credentials('demo-secret')
+//     }
+
+//     stages{
+//         stage('Build & Test'){
+//             steps{
+//                 sh 'mvn clean verify'
+//             }
+//         }
+//     }
+// }
+
+pipeline {
     agent any
-    tools {
-        maven 'Maven'   // ← MUST match the name in Jenkins UI
+
+    environment {
+        IMAGE_NAME = "pawr2332/springboot-ci-demo"
+        IMAGE_TAG  = "${env.GIT_COMMIT.take(7)}"
+        DOCKER_CREDS = credentials('dockerhub-creds')
     }
 
-    environment{
-        MY_SECRET = credentials('demo-secret')
-    }
-
-    stages{
-        stage('Build & Test'){
-            steps{
-                sh 'mvn clean verify'
+    stages {
+        stage('Build Image') {
+            steps {
+                sh "docker build -t $IMAGE_NAME:$IMAGE_TAG ."
             }
+        }
+
+        stage('Login to DockerHub') {
+            steps {
+                sh '''
+                  echo "$DOCKER_CREDS_PSW" | docker login -u "$DOCKER_CREDS_USR" --password-stdin
+                '''
+            }
+        }
+
+        stage('Push Image') {
+            steps {
+                sh "docker push $IMAGE_NAME:$IMAGE_TAG"
+            }
+        }
+    }
+
+    post {
+        always {
+            sh "docker logout || true"
         }
     }
 }
