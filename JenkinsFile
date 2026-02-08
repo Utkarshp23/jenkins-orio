@@ -20,13 +20,31 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
     environment {
         IMAGE_NAME = "pawr2332/springboot-ci-demo"
-        IMAGE_TAG  = "${env.GIT_COMMIT.take(7)}"
+        IMAGE_TAG  = "${env.BUILD_NUMBER}"
         DOCKER_CREDS = credentials('dockerhub-creds')
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/Utkarshp23/jenkins-orio.git'
+                    ]]
+                ])
+                sh 'git status'
+                sh 'git rev-parse --short HEAD'
+            }
+        }
+
         stage('Build Image') {
             steps {
                 sh "docker build -t $IMAGE_NAME:$IMAGE_TAG ."
